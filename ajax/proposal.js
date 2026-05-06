@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
 	$("#form-proposal").on("submit", function (e) {
 		e.preventDefault();
 
@@ -8,7 +7,7 @@ $(document).ready(function () {
 
 		// ✅ Ensure CSRF token is included
 		let csrfInput = $('#form-proposal input[type="hidden"]');
-		formData.set(csrfInput.attr('name'), csrfInput.val());
+		formData.set(csrfInput.attr("name"), csrfInput.val());
 
 		let btn = $(this).find('button[type="submit"]');
 		btn.prop("disabled", true).text("Saving...");
@@ -38,24 +37,24 @@ $(document).ready(function () {
 
 				if (res.status === "success") {
 					$.toast({
-						heading: 'Success',
+						heading: "Success",
 						text: res.message,
-						icon: 'success',
-						position: 'bottom-center'
+						icon: "success",
+						position: "bottom-center",
 					});
 
+					// ✅ Redirect
 					if (res.redirect) {
 						setTimeout(() => {
 							window.location.href = res.redirect;
-						}, 800);
+						}, 1000);
 					}
-
 				} else {
 					$.toast({
-						heading: 'Error',
+						heading: "Error",
 						text: res.message,
-						icon: 'error',
-						position: 'bottom-center'
+						icon: "error",
+						position: "bottom-center",
 					});
 				}
 
@@ -71,13 +70,12 @@ $(document).ready(function () {
 				console.error(xhr.responseText);
 
 				$.toast({
-					heading: 'Error',
-					text: 'Server error occurred',
-					icon: 'error',
-					position: 'bottom-center'
+					heading: "Error",
+					text: "Server error occurred",
+					icon: "error",
+					position: "bottom-center",
 				});
-			}
+			},
 		});
 	});
-
 });

@@ -1,7 +1,12 @@
 <?php
-class ProposalController extends CI_controller {
+class ProposalController extends CI_controller
+{
+	// protected $auth;
+	// protected $ProposalModel;
+	// protected $que_model;
 
-	public function __construct() {
+	public function __construct()
+	{
 
 		parent::__construct();
 		$this->load->helper('url', 'form');
@@ -12,57 +17,97 @@ class ProposalController extends CI_controller {
 		$this->load->model('super-admin/ProposalModel', 'ProposalModel');
 		$this->auth->isLoggedIn();
 	}
-	public function index() {
+	public function index()
+	{
 		$data['page'] =  "super-admin/propsal/index";
 		$data['profile'] = $this->auth->getProfile($this->session->userdata('superadmin_id'));
-		$data['groups'] = $this->que_model->getAllQuestion();
+		$data['proposalList'] = $this->ProposalModel->getProposalList();
+
 		$this->load->view('super-admin/template', $data);
 	}
-	public function create() {
+	public function create()
+	{
 		$data['page'] =  "super-admin/propsal/create";
 		$data['profile'] = $this->auth->getProfile($this->session->userdata('superadmin_id'));
-		$data['groups'] = $this->que_model->getAllQuestion();
 		$this->load->view('super-admin/template', $data);
 	}
-	public function save_proposal() {
+	public function save_proposal()
+	{
+		// =========================
+		// 1. Prepare Proposal Data
+		// =========================
 		$data = array(
-			'title' => $this->input->post('title'),
-			'description' => $this->input->post('description'),
-			'name' => $this->input->post('name'),
-			'email' => $this->input->post('email'),
-			'designation' => $this->input->post('designation'),
-			'date' =>     date('Y-m-d'),
-			'superadmin_id' => $this->superadmin_id,
-			'status' => '1', // Default to active
-			'created_at' => date('Y-m-d H:i:s'),
+			'title'         => $this->input->post('title'),
+			'description'   => $this->input->post('description'),
+			'name'          => $this->input->post('name'),
+			'email'         => $this->input->post('email'),
+			'designation'   => $this->input->post('designation'),
+			'organisation'  => $this->input->post('organisation'),
+			'date'          => date('Y-m-d'),
+			'superadmin_id' => $this->session->userdata('superadmin_id'), // Assuming it's created by a non-logged in user
+			'status'        => 'Y', // Default to active
+			'created_at'    => date('Y-m-d H:i:s'),
 		);
 
+		// =========================
+		// 2. Insert Proposal First
+		// =========================
+		$this->db->insert('proposals', $data);
+		$proposal_id = $this->db->insert_id();
 
-		if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
-			$upload_path = FCPATH . './uploads/proposals/';
+		// =========================
+		// 3. Upload Multiple Files
+		// =========================
+		if (!empty($_FILES['files']['name'][0])) {
+
+			$upload_path = FCPATH . 'uploads/proposals/';
+
 			if (!is_dir($upload_path)) {
 				mkdir($upload_path, 0755, true);
 			}
 
-			$config['upload_path'] = $upload_path;
-			$config['allowed_types'] = 'pdf|docx';
-			$config['max_size'] = 2048; // 2MB
+			$files = $_FILES;
+			$count = count($_FILES['files']['name']);
 
-			$this->load->library('upload', $config);
+			for ($i = 0; $i < $count; $i++) {
 
-			if ($this->upload->do_upload('file')) {
-				$file_data = $this->upload->data();
-				$data['file'] = $file_data['file_name'];
-			} else {
-				echo json_encode(['status' => 'error', 'message' => $this->upload->display_errors()]);
-				return;
+				$_FILES['file']['name']     = $files['files']['name'][$i];
+				$_FILES['file']['type']     = $files['files']['type'][$i];
+				$_FILES['file']['tmp_name'] = $files['files']['tmp_name'][$i];
+				$_FILES['file']['error']    = $files['files']['error'][$i];
+				$_FILES['file']['size']     = $files['files']['size'][$i];
+
+				$config['upload_path']   = $upload_path;
+				$config['allowed_types'] = 'pdf|doc|docx';
+				$config['max_size']      = 5120; // 5MB
+				$config['encrypt_name']  = TRUE;
+
+				$this->load->library('upload', $config);
+				$this->upload->initialize($config);
+
+				if ($this->upload->do_upload('file')) {
+
+					$file_data = $this->upload->data();
+
+					// Save each file
+					$this->db->insert('proposal_files', [
+						'proposal_id' => $proposal_id,
+						'file'        => $file_data['file_name']
+					]);
+				} else {
+					// Debug if needed
+					log_message('error', $this->upload->display_errors());
+				}
 			}
 		}
 
-		if ($this->proposalModel->save_proposal()) {
-			echo json_encode(['status' => 'success', 'message' => 'Proposal saved successfully.']);
-		} else {
-			echo json_encode(['status' => 'error', 'message' => 'Failed to save proposal.']);
-		}
+		// =========================
+		// 4. Response
+		// =========================
+		echo json_encode([
+			'status'  => 'success',
+			'message' => 'Proposal saved successfully.',
+			'redirect' => base_url('super-admin/proposal'),
+		]);
 	}
 }
