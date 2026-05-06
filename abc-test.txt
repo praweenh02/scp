@@ -1,0 +1,88 @@
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:/CN=relay.nic.in
+   i:/C=US/O=Let's Encrypt/CN=R3
+ 1 s:/C=US/O=Let's Encrypt/CN=R3
+   i:/C=US/O=Internet Security Research Group/CN=ISRG Root X1
+ 2 s:/C=US/O=Internet Security Research Group/CN=ISRG Root X1
+   i:/O=Digital Signature Trust Co./CN=DST Root CA X3
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIFHjCCBAagAwIBAgISA+C5HNvXV496AXOtAAQJMkydMA0GCSqGSIb3DQEBCwUA
+MDIxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQD
+EwJSMzAeFw0yMjEyMjcwNzEzMjdaFw0yMzAzMjcwNzEzMjZaMBcxFTATBgNVBAMT
+DHJlbGF5Lm5pYy5pbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALyl
+/BEJVUNT7k9cMN6QdGlV0n0snFZK0UgG6v9eVOiHBxqdLBqkDI7jn39lIIl/kBIS
+OTRE78XriddvlVEBp+2NNeJsqZZtC3W7cPQQdKk5rdmJJFtclQvTtpzsx1Cc+pVN
+apP0It7X23Mxh/yVyQdurfijWQ41N2dX0EsswN+ENdmg1dzSRDz69osATuzjdIIY
+LQ0WIlBYTjjM67PaaPte8YY9JtzwZKg2ht5qE/ngqTdsOw/Verkw0BVBB/mjNt5F
+oT9gRJ+l3dUZUs8d+2ZHiaq11VAFHzHNKO/1Rlraptuo0asgw7YZTZjgUiKYZIxT
+jWLHcPbHZEEyX4zlrJECAwEAAaOCAkcwggJDMA4GA1UdDwEB/wQEAwIFoDAdBgNV
+HSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+FgQUNMx8gGsriGGl+i8QWjw0PTbaUXkwHwYDVR0jBBgwFoAUFC6zF7dYVsuuUAlA
+5h+vnYsUwsYwVQYIKwYBBQUHAQEESTBHMCEGCCsGAQUFBzABhhVodHRwOi8vcjMu
+by5sZW5jci5vcmcwIgYIKwYBBQUHMAKGFmh0dHA6Ly9yMy5pLmxlbmNyLm9yZy8w
+FwYDVR0RBBAwDoIMcmVsYXkubmljLmluMEwGA1UdIARFMEMwCAYGZ4EMAQIBMDcG
+CysGAQQBgt8TAQEBMCgwJgYIKwYBBQUHAgEWGmh0dHA6Ly9jcHMubGV0c2VuY3J5
+cHQub3JnMIIBBAYKKwYBBAHWeQIEAgSB9QSB8gDwAHcAtz77JN+cTbp18jnFulj0
+bF38Qs96nzXEnh0JgSXttJkAAAGFUqTB5AAABAMASDBGAiEAloLV7K3X4XzjRot7
+YFVwoERKIkwl0iV8bzK3VqyjXtkCIQD3hZjTRLK3Hj8L6476vdszzNYynp14QRhT
+I3eUahLm/AB1AOg+0No+9QY1MudXKLyJa8kD08vREWvs62nhd31tBr1uAAABhVKk
+we4AAAQDAEYwRAIhAJ3DZWfUXT5lWQ6Wfk33hm/j56rHLN+YnGOlPuJ0I968Ah8E
+7jPb1HUXEcAJcRSUVzZv4cw+uF1Cvutgg7Z6IPfGMA0GCSqGSIb3DQEBCwUAA4IB
+AQAcoooP3uQm7loQzK1f0D/JJqVIfY/89H56k34gSb0CwwPly3LKNeGArs1AGiEj
+Zhol0InckcjMKD2kn2gVazPg7N6tADvey/SLA6LMHL7y9Go0mKIz5P24A1aMrrSo
+0nUAEAaxkJM+UvFbocI7hQT1zlwHIj8e1wkDhy/cMiV82xT8ijSpJ+yqBrBcie4b
+qopSWKbXNnb6C1ojazQ4r/2//+GAuRo1eToDip2b7rjrvGjGlJkg2WrSvZg6n/EM
+Su7Cd3H8xFBnUWqtsOX+cHwB/6CU7LsZzE0s7vvc07OU7/gVHR3mHSfSeAbwVqZp
+ZGNO+3bpzc+kIqq4KUXG71i0
+-----END CERTIFICATE-----
+subject=/CN=relay.nic.in
+issuer=/C=US/O=Let's Encrypt/CN=R3
+---
+No client certificate CA names sent
+Peer signing digest: SHA512
+Server Temp Key: ECDH, P-256, 256 bits
+---
+SSL handshake has read 4857 bytes and written 450 bytes
+---
+New, TLSv1/SSLv3, Cipher is ECDHE-RSA-AES256-GCM-SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES256-GCM-SHA384
+    Session-ID: 8C70F0D84EF8138DA8B72631E117B4075D4C84B672186AE74A7CC87C580221E7
+    Session-ID-ctx: 
+    Master-Key: 5262ECF121123F8035BBA8512A73BFE7F0E0A3D6BDB4C224E793208F67A0430F758BBDE05325E13FD46E03C82B57215B
+    Key-Arg   : None
+    Krb5 Principal: None
+    PSK identity: None
+    PSK identity hint: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - c6 9d f1 97 85 48 bf 81-6c 8b 6f fa 31 78 51 5f   .....H..l.o.1xQ_
+    0010 - 15 51 61 d3 39 ef 6f 99-2b d5 76 11 7b f3 e6 86   .Qa.9.o.+.v.{...
+    0020 - 3e 62 9f 55 b8 42 c7 f4-76 ed 4b 44 69 d8 9b 01   >b.U.B..v.KDi...
+    0030 - 65 23 1d 15 06 35 98 89-19 e0 55 bb 53 fe a6 f1   e#...5....U.S...
+    0040 - 7e b1 da d3 cd 24 5d 83-13 41 99 c5 12 f0 50 18   ~....$]..A....P.
+    0050 - 53 08 2b e2 d7 06 ff 0f-94 31 4d 14 62 93 e4 3d   S.+......1M.b..=
+    0060 - f7 29 4a a9 8f aa 0a c2-cf 1e 1f b0 b8 83 d3 54   .)J............T
+    0070 - d0 26 17 4e 23 5f 93 f3-01 c0 c5 2f 68 ee c7 9e   .&.N#_...../h...
+    0080 - 60 2a 7b ae 04 4a 92 34-2e 82 46 a0 4f a3 bc 2c   `*{..J.4..F.O..,
+    0090 - a8 8f ff 90 4a c2 6a e2-2d 6b c3 dd de cd f7 71   ....J.j.-k.....q
+    00a0 - a3 dd 7c 0b f9 30 c6 55-60 3f c0 0a e2 ce 80 9d   ..|..0.U`?......
+    00b0 - 0f 01 c1 19 44 3e 90 05-10 c8 f6 47 1e 9d 7c 90   ....D>.....G..|.
+
+    Start Time: 1674621181
+    Timeout   : 300 (sec)
+    Verify return code: 0 (ok)
+---
+500 #5.5.1 command not recognized
+500 #5.5.1 command not recognized
+500 #5.5.1 command not recognized
