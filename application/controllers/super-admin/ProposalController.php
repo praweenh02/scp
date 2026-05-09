@@ -110,4 +110,86 @@ class ProposalController extends CI_controller
 			'redirect' => base_url('super-admin/proposal'),
 		]);
 	}
+	public function documentDetails($proposal_id) {
+		$proposal = $this->ProposalModel->getProposalById($proposal_id);
+		$proposalCommentList = $this->ProposalModel->getProposalCommnetList($proposal_id);
+
+		if (!$proposal) {
+			show_404(); // or redirect with error message
+			return;
+		}
+
+		$data['proposal'] = $proposal;
+		$data['proposalCommentList'] = $proposalCommentList;
+		$data['page_title'] = $proposal->title . " - Details";
+		$data['page'] = "super-admin/propsal/document_details";
+		$data['profile'] = $this->auth->getProfile(
+			$this->session->userdata('superadmin_id')
+		);
+
+		$this->load->view('super-admin/template', $data);
+	}
+	public function SaveProposalComment() {
+
+		$proposal_id = $this->input->post('proposal_id');
+		$comment     = $this->input->post('comment');
+
+		// Basic validation
+		if (empty($proposal_id) || empty($comment)) {
+			echo json_encode([
+				'status' => false,
+				'message' => 'Proposal ID and comment are required.'
+			]);
+			return;
+		}
+
+		$data = [
+			'proposal_id' => $proposal_id,
+			'comment'     => $comment,
+			'created_at'  => date('Y-m-d H:i:s'),
+		];
+
+		// Insert into DB (adjust table name)
+		$insert = $this->db->insert('proposal_comments', $data);
+		if ($insert) {
+			$dataArray = [
+				'proposal_status' => $comment,
+				'proposal_status_updated_date' => date('Y-m-d'),
+				'updated_at' => date('Y-m-d H:i:s')
+			];
+
+			$updatedComments = $this->ProposalModel->updateLetsComments($dataArray, $proposal_id);
+		}
+
+		if ($insert) {
+			echo json_encode([
+				'status' => true,
+				'message' => 'Comment added successfully.'
+			]);
+		} else {
+			echo json_encode([
+				'status' => false,
+				'message' => 'Failed to add comment.'
+			]);
+		}
+	}
+	public function deleteProposalComment($comment_id, $proposal_id) {
+		if (empty($comment_id)) {
+			$this->session->set_flashdata('error', 'Invalid comment ID');
+			redirect('super-admin/proposal');
+			return;
+		}
+
+		$this->db->where('id', $comment_id);
+		$deleted = $this->db->delete('proposal_comments');
+
+		if ($deleted) {
+			$this->session->set_flashdata('success', 'Comment deleted successfully');
+		} else {
+			$this->session->set_flashdata('error', 'Failed to delete comment');
+		}
+
+		// ✅ redirect to listing page
+		redirect('super-admin/proposals/documentdetails/' . $proposal_id);
+	}
 }
