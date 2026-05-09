@@ -3,13 +3,13 @@ $(document).ready(function(){
     $("select.category").change(function(){
          var csrf_token = $('input[name=csrf_token]').val();
         var category_id = $(".category option:selected").val();
-        
+
         $.ajax({
             type: "POST",
             url: SITEROOT+"home/getAllGroups",
            data:{category_id:category_id, csrf_token:csrf_token}
         }).done(function(data){
-            
+
             $("#group_id").html(data);
         });
     });
@@ -20,14 +20,14 @@ function save_data()
     if ($('#form-page').valid()) // check if form is valid
     {
         var question_id = $("#faq_id").val();
-       
-        var form = $('#form-page')[0]; 
+
+        var form = $('#form-page')[0];
           formData = new FormData(form);
           //formData.append('group_id',$("#group_id").val());
           formData.append('description', CKEDITOR.instances['description'].getData());
           //formData.append('faq_answer_hindi', CKEDITOR.instances['faq_answer_hindi'].getData());
            //formData.append('mangement_team', CKEDITOR.instances['mangement_team'].getData());
-          
+
          $.ajax({
             url: SITEROOT +'super-admin/page/save_data',
             type: "post",
@@ -39,7 +39,7 @@ function save_data()
                 showloader();
                 $(".btn-submit").attr('disabled', 'disabled');
             },
-            
+
             complete: function () {
                 hideloader();
                 $(".btn-submit").removeAttr('disabled');
@@ -57,7 +57,7 @@ function save_data()
                         position: 'bottom-center'
                     });
                     setTimeout(function () {
-                      
+
                        //$("#dynamic-table").load(location.href + " #dynamic-table");
                        window.location.href='super-admin/page/';
                     }, 2000);
@@ -76,11 +76,11 @@ function save_data()
                         icon: 'error',
                         position: 'bottom-center'
                     });
-                    
+
                 }
             },
-            
-            error: function (xhr, ajaxOptions, thrownError) 
+
+             error: function (xhr, ajaxOptions, thrownError)
             {
                 console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
                 $.toast({
@@ -98,17 +98,18 @@ function deleteData(id)
 {
     bootbox.confirm("Are you sure you want to delete this row?", function(result) {
         if(result==true)
-        { 
+        {
            var csrf_token = $('input[name=csrf_token]').val();
            var $ele = $(this).parent().parent();
-            $.post(SITEROOT + 'super-admin/page/delete_data', {id: id, csrf_token:csrf_token}, function (data) {deleteData
+            $.post(SITEROOT + 'super-admin/proposal/delete_comment', { id: id, csrf_token: csrf_token }, function (data) {
+                deleteData
                if ($.trim(data) != 'success') {
                         //hideloader();
                         $.toast({
                             heading: 'Error',
                             text: 'Something went wrong.',
                             icon: 'warning',
-                            position : 'bottom-center' 
+                            position: 'bottom-center'
                         });
                     } else {
                         //hideloader();
@@ -116,7 +117,7 @@ function deleteData(id)
                             heading: 'Deleted',
                             text: 'Page deleted successfully.',
                             icon: 'error',
-                            position : 'bottom-center' 
+                            position: 'bottom-center'
                         });
                         setTimeout(function() {
                             window.location.href='super-admin/page/';
@@ -124,5 +125,5 @@ function deleteData(id)
                     }
             });
         }
-        }); 
+    });
    }

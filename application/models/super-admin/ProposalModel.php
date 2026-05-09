@@ -30,4 +30,23 @@ class ProposalModel extends CI_model
 		$this->db->order_by('created_at', 'DESC');
 		return $this->db->get()->result();
 	}
+	public function getProposalById($proposal_id) {
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->where('id', $proposal_id);
+		return $this->db->get()->row();
+	}
+	public function updateLetsComments($dataArray = [], $proposal_id = 0) {
+		$this->db->where('id', $proposal_id);
+		$updated = $this->db->update('proposals', $dataArray);
+
+		return $updated;
+	}
+	public function getProposalCommnetList($proposal_id) {
+		$this->db->select('*');
+		$this->db->from('proposal_comments');
+		$this->db->where('proposal_id', $proposal_id);
+		$this->db->order_by('id', 'DESC');
+		return $this->db->get()->result();
+	}
 }

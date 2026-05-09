@@ -81,6 +81,8 @@
  											<?php endif; ?>
  										</td>
  										<td><?= ($proposalResult->status == 'Y') ?  '<button class="btn-success btn-xs">Active</button>' : '<button class="btn-danger btn-xs">Inactive</button>' ?>
+ 											<br>
+ 											<a href="super-admin/proposals/documentdetails/<?= $proposalResult->id; ?>">Click here for current status </a>
  										</td>
  										<td><a href="super-admin/question/add/<?= $proposalResult->id; ?>/"
  												class="btn btn-xs btn-primary" title="Edit"><i class="fa
@@ -108,4 +110,4 @@ fa-trash-o"></i> Delete</button>
 
  <div id="popupdiv"></div>
 
- <script src="ajax/question.js"></script>
+ <script src="<?= base_url('ajax/proposal.js') ?>"></script>
