@@ -51,7 +51,9 @@
  											<?= $group_data->question_no; ?>/ <?= $group_data->question_name; ?>
 
  										</td>
- 										<td><?= ($group_data->question_status == 'Y') ?  '<button class="btn-success btn-xs">Active</button>' : '<button class="btn-danger btn-xs">Inactive</button>' ?></td>
+ 										<td><?= ($group_data->question_status == 'Y') ?  '<button class="btn-success btn-xs">Active</button>' : '<button class="btn-danger btn-xs">Inactive</button>' ?>
+ 											<a href="currentStatus/<?= $group_data->question_id; ?>">Click here for current status</a>
+ 										</td>
  										<td><a href="super-admin/question/add/<?= $group_data->question_id; ?>/" class="btn btn-xs btn-primary" title="Edit"><i class="fa
 fa-edit"></i> Edit</a>
  										</td>
