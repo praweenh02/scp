@@ -1,6 +1,6 @@
  <div class="page-heading">
  	<h3>
- 		Question List
+ 		Proposal List
  	</h3>
  	<hr>
  </div>
@@ -16,7 +16,7 @@
  		<div class="col-sm-12">
  			<section class="panel">
  				<header class="panel-heading">
- 					Question List
+ 					Proposal List
  					<span class="mb-5 pull-right" style="margin-top: -6px;">
  						<a href="super-admin/proposal/create" class="btn btn-primary btn-sm">
  							<i class="fa fa-plus"></i> Add New
@@ -29,9 +29,9 @@
  							<thead>
  								<tr>
  									<th>#</th>
- 									<th>Created Date</th>
- 									<th>Title</th>
- 									<th>Description</th>
+ 									<th>Name of the document</th>
+ 									<th>Description of document</th>
+ 									<th>Proposal Details</th>
  									<th>File</th>
  									<th>Status</th>
  									<th>Action</th>
@@ -41,24 +41,53 @@
  							<tbody id="loadallData">
  								<?php
 									$i = 1;
-									foreach ($groups as $group_data) { ?>
+									foreach ($proposalList as $proposalResult) {
+										$proposalFiles = $this->db
+											->where('proposal_id', $proposalResult->id)
+											->get('proposal_files')
+											->result();
+									?>
  									<tr class="gradeX">
  										<td><?= $i; ?></td>
 
- 										<td><?= $group_data->category_name; ?></td>
- 										<td><?= $group_data->group_title; ?></td>
+ 										<td><?= $proposalResult->title; ?></td>
+ 										<td><?= $proposalResult->description; ?></td>
  										<td>
- 											<?= $group_data->question_no; ?>/ <?= $group_data->question_name; ?>
+ 											<span><?= $proposalResult->name; ?></span><br>
+ 											<span> <?= $proposalResult->email; ?></span><br>
+ 											<span><?= $proposalResult->designation; ?></span><br>
+ 											<span><?= $proposalResult->organisation; ?></span><br>
+
+
 
  										</td>
- 										<td><?= ($group_data->question_status == 'Y') ?  '<button class="btn-success btn-xs">Active</button>' : '<button class="btn-danger btn-xs">Inactive</button>' ?>
- 											<a href="currentStatus/<?= $group_data->question_id; ?>">Click here for current status</a>
- 										</td>
- 										<td><a href="super-admin/question/add/<?= $group_data->question_id; ?>/" class="btn btn-xs btn-primary" title="Edit"><i class="fa
-fa-edit"></i> Edit</a>
- 										</td>
  										<td>
- 											<button onclick="deleteData('<?= $group_data->question_id; ?>');" class="btn btn-xs btn-danger" title="Delete"><i class="fa
+ 											<?php if (!empty($proposalFiles)) : ?>
+
+ 												<div class="file-list">
+ 													<?php foreach ($proposalFiles as $f) : ?>
+ 														<div class="file-item">
+ 															<a href="<?= base_url('uploads/proposals/' . $f->file) ?>"
+ 																target="_blank">
+ 																<i class="fa fa-file text-primary"></i>
+ 																<?= $f->file ?>
+ 															</a>
+ 														</div>
+ 													<?php endforeach; ?>
+ 												</div>
+
+ 											<?php else : ?>
+ 												<span class="text-muted">No files</span>
+ 											<?php endif; ?>
+ 										</td>
+ 										<td><?= ($proposalResult->status == 'Y') ?  '<button class="btn-success btn-xs">Active</button>' : '<button class="btn-danger btn-xs">Inactive</button>' ?>
+ 										</td>
+ 										<td><a href="super-admin/question/add/<?= $proposalResult->id; ?>/"
+ 												class="btn btn-xs btn-primary" title="Edit"><i class="fa
+fa-edit"></i> Edit</a>
+
+ 											<button onclick="deleteData('<?= $proposalResult->id; ?>');"
+ 												class="btn btn-xs btn-danger" title="Delete"><i class="fa
 fa-trash-o"></i> Delete</button>
  										</td>
  									</tr>

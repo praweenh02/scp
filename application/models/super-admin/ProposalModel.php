@@ -1,12 +1,17 @@
 <?php
 
-class ProposalModel extends CI_model {
-	public function __construct() {
+class ProposalModel extends CI_model
+{
+	protected $table;
+	protected $superadmin_id;
+	public function __construct()
+	{
 		parent::__construct();
 		$this->table = 'proposals';
 		$this->superadmin_id = $this->session->userdata('superadmin_id');
 	}
-	public function save_proposal($data) {
+	public function save_proposal($data = array())
+	{
 		$data['superadmin_id'] = $this->superadmin_id;
 		if (isset($data['id']) && !empty($data['id'])) {
 			// Update existing proposal
@@ -16,5 +21,13 @@ class ProposalModel extends CI_model {
 			// Insert new proposal
 			return $this->db->insert($this->table, $data);
 		}
+	}
+	public function getProposalList()
+	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->where('superadmin_id', $this->superadmin_id);
+		$this->db->order_by('created_at', 'DESC');
+		return $this->db->get()->result();
 	}
 }
