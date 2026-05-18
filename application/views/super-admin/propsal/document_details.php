@@ -70,6 +70,9 @@
  										<td></td>
  										<td>
  											<p><?= $comments->comment; ?></p>
+											<p><?php if (!empty($comments->comment_file)): ?>
+												<a href="<?= base_url('uploads/proposal-comments/'.$comments->comment_file); ?>" target="_blank">View File</a>
+											<?php endif; ?>	</p>
  											<a href="super-admin/proposal/delete_comment/<?= $comments->id; ?>/<?= $comments->proposal_id; ?>"><label class="text-danger"><i class="fa fa-trash-o"></i>
  													Delete Comment
  												</label>
@@ -104,12 +107,20 @@
  				</div>
 
  				<div class="modal-body">
+					<div class="form-group">
+						<label for="comment">Comment</label>
  					<textarea class="form-control" name="comment" placeholder="Write your comment..."></textarea>
+					</div>
+					<div class="form-group">
+						<label for="status">File</label>
+					<input type="file" name="comment_file" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt">
+					</div>
  				</div>
 
  				<div class="modal-footer">
  					<button class="btn btn-secondary" data-dismiss="modal">Close</button>
  					<button type="submit" class="btn btn-success">Submit</button>
+
 
  				</div>
 

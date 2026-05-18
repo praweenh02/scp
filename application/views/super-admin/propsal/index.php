@@ -66,11 +66,16 @@
 
  												<div class="file-list">
  													<?php foreach ($proposalFiles as $f) : ?>
+										<?php
+											$isUrl = preg_match('/^https?:\/\//i', $f->file);
+											$fileHref = $isUrl ? $f->file : base_url('uploads/proposals/' . $f->file);
+											$fileLabel = $isUrl ? basename(parse_url($f->file, PHP_URL_PATH) ?: $f->file) : $f->file;
+										?>
  														<div class="file-item">
- 															<a href="<?= base_url('uploads/proposals/' . $f->file) ?>"
+ 															<a href="<?= $fileHref ?>"
  																target="_blank">
  																<i class="fa fa-file text-primary"></i>
- 																<?= $f->file ?>
+ 																<?= $fileLabel ?>
  															</a>
  														</div>
  													<?php endforeach; ?>
