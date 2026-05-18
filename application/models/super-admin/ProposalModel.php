@@ -27,7 +27,7 @@ class ProposalModel extends CI_model
 		$this->db->select('*');
 		$this->db->from($this->table);
 		$this->db->where('superadmin_id', $this->superadmin_id);
-		$this->db->order_by('created_at', 'DESC');
+		$this->db->order_by('id', 'DESC');
 		return $this->db->get()->result();
 	}
 	public function getProposalById($proposal_id) {
@@ -46,7 +46,7 @@ class ProposalModel extends CI_model
 		$this->db->select('*');
 		$this->db->from('proposal_comments');
 		$this->db->where('proposal_id', $proposal_id);
-		$this->db->order_by('id', 'DESC');
+		$this->db->order_by('id', 'ASC');
 		return $this->db->get()->result();
 	}
 }
