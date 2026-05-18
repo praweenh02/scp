@@ -1,83 +1,206 @@
 $(document).ready(function () {
-	$("#form-proposal").on("submit", function (e) {
-		e.preventDefault();
 
-		let form = document.getElementById("form-proposal");
-		let formData = new FormData(form);
+    $("#form-proposal").on("submit", function (e) {
 
-		// ✅ Ensure CSRF token is included
-		let csrfInput = $('#form-proposal input[type="hidden"]');
-		formData.set(csrfInput.attr("name"), csrfInput.val());
+        e.preventDefault();
 
-		let btn = $(this).find('button[type="submit"]');
-		btn.prop("disabled", true).text("Saving...");
+        let source = $('input[name="file_source"]:checked').val();
 
-		$.ajax({
-			url: form.action,
-			type: "POST",
-			data: formData,
-			processData: false,
-			contentType: false,
-			cache: false,
+        // =========================
+        // FILE VALIDATION
+        // =========================
+        if (source === 'upload') {
 
-			success: function (response) {
-				console.log("Raw response:", response);
-				btn.prop("disabled", false).text("Save changes");
+            let filesSelected = false;
 
-				let res;
-				try {
-					res = JSON.parse(response);
-				} catch (e) {
-					console.error("Invalid JSON:", response);
-					alert("Invalid server response");
-					return;
-				}
+            $('#file-wrapper input[type="file"]').each(function () {
 
-				console.log("Parsed response:", res);
+                if (this.files && this.files.length > 0) {
+                    filesSelected = true;
+                }
+            });
 
-				if (res.status === "success") {
-					$.toast({
-						heading: "Success",
-						text: res.message,
-						icon: "success",
-						position: "bottom-center",
-					});
+            if (!filesSelected) {
 
-					// ✅ Redirect
-					if (res.redirect) {
-						setTimeout(() => {
-							window.location.href = res.redirect;
-						}, 1000);
-					}
-				} else {
-					$.toast({
-						heading: "Error",
-						text: res.message,
-						icon: "error",
-						position: "bottom-center",
-					});
-				}
+                alert('Please upload at least one document.');
 
-				// ✅ Update CSRF token after every request
-				if (res.csrfName && res.csrfHash) {
-					$('input[name="' + res.csrfName + '"]').val(res.csrfHash);
-				}
-			},
+                return;
+            }
+        }
 
-			error: function (xhr) {
-				btn.prop("disabled", false).text("Save changes");
+        // =========================
+        // URL VALIDATION
+        // =========================
+        else if (source === 'url') {
 
-				console.error(xhr.responseText);
+            let validUrlFound = false;
+            let invalidUrlFound = false;
 
-				$.toast({
-					heading: "Error",
-					text: "Server error occurred",
-					icon: "error",
-					position: "bottom-center",
-				});
-			},
-		});
-	});
+            $('input[name="file_urls[]"]').each(function () {
+
+                let fileUrl = $.trim($(this).val());
+
+                // Skip empty rows
+                if (fileUrl === '') {
+                    return true;
+                }
+
+                let validUrl = /^(https?:\/\/).+/i.test(fileUrl);
+
+                if (validUrl) {
+
+                    validUrlFound = true;
+
+                } else {
+
+                    invalidUrlFound = true;
+                }
+            });
+
+            // No valid URLs entered
+            if (!validUrlFound) {
+
+                alert('Please enter at least one valid document URL.');
+
+                return;
+            }
+
+            // Invalid URL exists
+            if (invalidUrlFound) {
+
+                alert('Please enter valid URLs starting with http:// or https://');
+
+                return;
+            }
+        }
+
+        // =========================
+        // FORM DATA
+        // =========================
+        let form = document.getElementById("form-proposal");
+
+        let formData = new FormData(form);
+
+        // =========================
+        // CSRF TOKEN
+        // =========================
+        let csrfInput = $('#form-proposal input[type="hidden"]').first();
+
+        formData.set(
+            csrfInput.attr("name"),
+            csrfInput.val()
+        );
+
+        // =========================
+        // SUBMIT BUTTON
+        // =========================
+        let btn = $(this).find('button[type="submit"]');
+
+        btn.prop("disabled", true)
+           .text("Saving...");
+
+        // =========================
+        // AJAX
+        // =========================
+        $.ajax({
+
+            url: form.action,
+
+            type: "POST",
+
+            data: formData,
+
+            processData: false,
+
+            contentType: false,
+
+            cache: false,
+
+            success: function (response) {
+
+                console.log("Raw response:", response);
+
+                btn.prop("disabled", false)
+                   .text("Save changes");
+
+                let res;
+
+                try {
+
+                    res = JSON.parse(response);
+
+                } catch (e) {
+
+                    console.error("Invalid JSON:", response);
+
+                    alert("Invalid server response");
+
+                    return;
+                }
+
+                console.log("Parsed response:", res);
+
+                // =========================
+                // SUCCESS
+                // =========================
+                if (res.status === "success") {
+
+                    $.toast({
+                        heading: "Success",
+                        text: res.message,
+                        icon: "success",
+                        position: "bottom-center",
+                    });
+
+                    // Redirect
+                    if (res.redirect) {
+
+                        setTimeout(function () {
+
+                            window.location.href = res.redirect;
+
+                        }, 1000);
+                    }
+
+                } else {
+
+                    $.toast({
+                        heading: "Error",
+                        text: res.message,
+                        icon: "error",
+                        position: "bottom-center",
+                    });
+                }
+
+                // =========================
+                // UPDATE CSRF TOKEN
+                // =========================
+                if (res.csrfName && res.csrfHash) {
+
+                    $('input[name="' + res.csrfName + '"]')
+                        .val(res.csrfHash);
+                }
+            },
+
+            // =========================
+            // ERROR
+            // =========================
+            error: function (xhr) {
+
+                btn.prop("disabled", false)
+                   .text("Save changes");
+
+                console.error(xhr.responseText);
+
+                $.toast({
+                    heading: "Error",
+                    text: "Server error occurred",
+                    icon: "error",
+                    position: "bottom-center",
+                });
+            }
+        });
+    });
 });
 //Save Comments
 $(document).ready(function () {

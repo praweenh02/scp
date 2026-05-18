@@ -34,83 +34,185 @@ class ProposalController extends CI_controller
 	public function save_proposal()
 	{
 		// =========================
-		// 1. Prepare Proposal Data
+		// 1. PREPARE PROPOSAL DATA
 		// =========================
 		$data = array(
+
 			'title'         => $this->input->post('title'),
+
 			'description'   => $this->input->post('description'),
+
 			'name'          => $this->input->post('name'),
+
 			'email'         => $this->input->post('email'),
+
 			'designation'   => $this->input->post('designation'),
+
 			'organisation'  => $this->input->post('organisation'),
+
 			'date'          => date('Y-m-d'),
-			'superadmin_id' => $this->session->userdata('superadmin_id'), // Assuming it's created by a non-logged in user
-			'status'        => 'Y', // Default to active
+
+			'superadmin_id' => $this->session->userdata('superadmin_id'),
+
+			'status'        => 'Y',
+
 			'created_at'    => date('Y-m-d H:i:s'),
 		);
 
 		// =========================
-		// 2. Insert Proposal First
+		// 2. INSERT PROPOSAL
 		// =========================
 		$this->db->insert('proposals', $data);
+
 		$proposal_id = $this->db->insert_id();
 
 		// =========================
-		// 3. Upload Multiple Files
+		// 3. FILE SOURCE
 		// =========================
-		if (!empty($_FILES['files']['name'][0])) {
+		$file_source = $this->input->post('file_source') ?: 'upload';
+
+		// =====================================================
+		// 4. SAVE MULTIPLE URLS
+		// =====================================================
+		if ($file_source === 'url') {
+
+			$file_urls = $this->input->post('file_urls');
+
+			if (!empty($file_urls) && is_array($file_urls)) {
+
+				foreach ($file_urls as $url) {
+
+					$url = trim($url);
+
+					// Skip empty rows
+					if (empty($url)) {
+						continue;
+					}
+
+					// Add https if missing
+					if (!preg_match('#^https?://#i', $url)) {
+
+						$url = 'https://' . $url;
+					}
+
+					// Validate URL
+					if (filter_var($url, FILTER_VALIDATE_URL)) {
+
+						$this->db->insert('proposal_files', [
+
+							'proposal_id' => $proposal_id,
+
+							'file'        => $url,
+
+							'type'        => 'url',
+						]);
+					} else {
+
+						log_message(
+							'error',
+							'Invalid proposal URL: ' . $url
+						);
+					}
+				}
+			}
+		}
+
+		// =====================================================
+		// 5. SAVE MULTIPLE FILES
+		// =====================================================
+		elseif (
+			!empty($_FILES['files']['name'][0])
+		) {
 
 			$upload_path = FCPATH . 'uploads/proposals/';
 
+			// Create folder if not exists
 			if (!is_dir($upload_path)) {
+
 				mkdir($upload_path, 0755, true);
 			}
 
 			$files = $_FILES;
+
 			$count = count($_FILES['files']['name']);
 
 			for ($i = 0; $i < $count; $i++) {
 
-				$_FILES['file']['name']     = $files['files']['name'][$i];
-				$_FILES['file']['type']     = $files['files']['type'][$i];
-				$_FILES['file']['tmp_name'] = $files['files']['tmp_name'][$i];
-				$_FILES['file']['error']    = $files['files']['error'][$i];
-				$_FILES['file']['size']     = $files['files']['size'][$i];
+				// Skip empty rows
+				if (empty($files['files']['name'][$i])) {
+					continue;
+				}
 
-				$config['upload_path']   = $upload_path;
-				$config['allowed_types'] = 'pdf|doc|docx';
-				$config['max_size']      = 5120; // 5MB
-				$config['encrypt_name']  = TRUE;
+				$_FILES['file']['name']
+					= $files['files']['name'][$i];
 
-				$this->load->library('upload', $config);
+				$_FILES['file']['type']
+					= $files['files']['type'][$i];
+
+				$_FILES['file']['tmp_name']
+					= $files['files']['tmp_name'][$i];
+
+				$_FILES['file']['error']
+					= $files['files']['error'][$i];
+
+				$_FILES['file']['size']
+					= $files['files']['size'][$i];
+
+				// Upload config
+				$config['upload_path']
+					= $upload_path;
+
+				$config['allowed_types']
+					= 'pdf|doc|docx';
+
+				$config['max_size']
+					= 5120; // 5MB
+
+				$config['encrypt_name']
+					= TRUE;
+
+				$this->load->library('upload');
+
 				$this->upload->initialize($config);
 
+				// Upload file
 				if ($this->upload->do_upload('file')) {
 
 					$file_data = $this->upload->data();
 
-					// Save each file
+					// Save file record
 					$this->db->insert('proposal_files', [
+
 						'proposal_id' => $proposal_id,
-						'file'        => $file_data['file_name']
+
+						'file'        => $file_data['file_name'],
+
+						'type'        => 'file',
 					]);
 				} else {
-					// Debug if needed
-					log_message('error', $this->upload->display_errors());
+
+					log_message(
+						'error',
+						$this->upload->display_errors()
+					);
 				}
 			}
 		}
 
 		// =========================
-		// 4. Response
+		// 6. RESPONSE
 		// =========================
 		echo json_encode([
-			'status'  => 'success',
-			'message' => 'Proposal saved successfully.',
+
+			'status'   => 'success',
+
+			'message'  => 'Proposal saved successfully.',
+
 			'redirect' => base_url('super-admin/proposal'),
 		]);
 	}
-	public function documentDetails($proposal_id) {
+	public function documentDetails($proposal_id)
+	{
 		$proposal = $this->ProposalModel->getProposalById($proposal_id);
 		$proposalCommentList = $this->ProposalModel->getProposalCommnetList($proposal_id);
 
@@ -129,51 +231,139 @@ class ProposalController extends CI_controller
 
 		$this->load->view('super-admin/template', $data);
 	}
-	public function SaveProposalComment() {
-
+	public function SaveProposalComment()
+	{
 		$proposal_id = $this->input->post('proposal_id');
-		$comment     = $this->input->post('comment');
 
-		// Basic validation
+		$comment = $this->input->post('comment');
+
+		// =========================
+		// VALIDATION
+		// =========================
 		if (empty($proposal_id) || empty($comment)) {
+
 			echo json_encode([
-				'status' => false,
+
+				'status'  => false,
+
 				'message' => 'Proposal ID and comment are required.'
 			]);
+
 			return;
 		}
 
+		// =========================
+		// SINGLE COMMENT FILE
+		// =========================
+		$comment_file = NULL;
+
+		if (!empty($_FILES['comment_file']['name'])) {
+
+			$upload_path = FCPATH . 'uploads/proposal-comments/';
+
+			// Create folder if not exists
+			if (!is_dir($upload_path)) {
+
+				mkdir($upload_path, 0755, true);
+			}
+
+			// Upload Config
+			$config['upload_path']
+				= $upload_path;
+
+			$config['allowed_types']
+				= 'pdf|doc|docx|jpg|jpeg|png';
+
+			$config['max_size']
+				= 5120; // 5MB
+
+			$config['encrypt_name']
+				= TRUE;
+
+			$this->load->library('upload');
+
+			$this->upload->initialize($config);
+
+			// Upload File
+			if ($this->upload->do_upload('comment_file')) {
+
+				$file_data = $this->upload->data();
+
+				$comment_file = $file_data['file_name'];
+			} else {
+
+				echo json_encode([
+
+					'status'  => false,
+
+					'message' => strip_tags(
+						$this->upload->display_errors()
+					)
+				]);
+
+				return;
+			}
+		}
+
+		// =========================
+		// INSERT COMMENT
+		// =========================
 		$data = [
+
 			'proposal_id' => $proposal_id,
+
 			'comment'     => $comment,
+
+			'comment_file' => $comment_file,
+
 			'created_at'  => date('Y-m-d H:i:s'),
 		];
 
-		// Insert into DB (adjust table name)
-		$insert = $this->db->insert('proposal_comments', $data);
+		$insert = $this->db->insert(
+			'proposal_comments',
+			$data
+		);
+
+		// =========================
+		// UPDATE PROPOSAL STATUS
+		// =========================
 		if ($insert) {
+
 			$dataArray = [
-				'proposal_status' => $comment,
-				'proposal_status_updated_date' => date('Y-m-d'),
-				'updated_at' => date('Y-m-d H:i:s')
+
+				'proposal_status'
+				=> $comment,
+
+				'proposal_status_updated_date'
+				=> date('Y-m-d'),
+
+				'updated_at'
+				=> date('Y-m-d H:i:s')
 			];
 
-			$updatedComments = $this->ProposalModel->updateLetsComments($dataArray, $proposal_id);
-		}
+			$this->ProposalModel->updateLetsComments(
+				$dataArray,
+				$proposal_id
+			);
 
-		if ($insert) {
 			echo json_encode([
-				'status' => true,
+
+				'status'  => true,
+
 				'message' => 'Comment added successfully.'
 			]);
 		} else {
+
 			echo json_encode([
-				'status' => false,
+
+				'status'  => false,
+
 				'message' => 'Failed to add comment.'
 			]);
 		}
 	}
-	public function deleteProposalComment($comment_id, $proposal_id) {
+	public function deleteProposalComment($comment_id, $proposal_id)
+	{
 		if (empty($comment_id)) {
 			$this->session->set_flashdata('error', 'Invalid comment ID');
 			redirect('super-admin/proposal');
